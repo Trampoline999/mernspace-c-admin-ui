@@ -1,9 +1,27 @@
 import React from 'react'
-import { Layout, Space, Card,Button, Checkbox, Form, Input} from 'antd';
+import { Layout, Space, Card,Button, Checkbox, Form, Input, Flex, Alert} from 'antd';
 import { LockFilled ,LockOutlined,UserOutlined} from '@ant-design/icons';
 import logo from "../../assets/Mern Space Admin Logo.svg"
+import { useMutation } from '@tanstack/react-query';
+import { login } from '../../http/api';
 
+const loginUser = async (credentials)=>{
+  const {data} = await login(credentials)
+  return data;
+}
 const LoginPage = () => {
+
+  const {mutate,isPending,isError,error} = useMutation(
+    { 
+      mutationKey:'login',
+      mutationFn :loginUser,
+      onSuccess:async ()=>{
+        console.log("user logged in successfully")
+      }
+    }
+  )
+
+ 
   return (
     <>
     {/* <div>Sign in</div>
@@ -35,7 +53,12 @@ const LoginPage = () => {
     name="basic"
     style={{ maxWidth: 600 }}
     autoComplete="off"
+      onFinish={(userData)=>{
+        mutate({email:userData.username,password:userData.password})
+        console.log(userData)
+      }}
   >
+      {isError &&  <Alert title={error?.message} type="error" />}
      <Form.Item
       name="username"
       rules={[{ required: true, message: 'Please enter your username!' }]}
@@ -50,13 +73,15 @@ const LoginPage = () => {
       <Input.Password  prefix={<LockOutlined />} type={"password"} placeholder='password'/>
     </Form.Item>
 
+    <Flex justify='space-between'>
     <Form.Item name="remember" valuePropName="checked" label={null}>
-      <Checkbox>Remember me</Checkbox>
-      <a href="#">Forget password</a>
+      <Checkbox>Remember me</Checkbox>  
     </Form.Item>
+    <a href="#" id='login-form-forget-password'>Forget password</a>
+    </Flex>
 
     <Form.Item label={null}>
-      <Button type="primary" htmlType="submit" style={{width:'100%'}}>
+      <Button type="primary" htmlType="submit" style={{width:'100%'}} loading={isPending}>
         login
       </Button>
       </Form.Item>
