@@ -4,6 +4,7 @@ import { LockFilled ,LockOutlined,UserOutlined} from '@ant-design/icons';
 import logo from "../../assets/Mern Space Admin Logo.svg"
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { login, self } from '../../http/api.js';
+import { authStore } from '../../store.js';
 
 const loginUser = async (credentials)=>{
   const {data} = await login(credentials)
@@ -16,6 +17,8 @@ const getSelf = async()=>{
 }
 const LoginPage = () => {
 
+  const {setUser} = authStore()
+
   const {data: selfData, refetch} = useQuery({
     queryKey:['self'],
     queryFn:getSelf,
@@ -27,9 +30,9 @@ const LoginPage = () => {
       mutationKey:['login'],
       mutationFn :loginUser,
       onSuccess:async ()=>{
-        await refetch()
-        console.log("user logged in successfully")
-        console.log("Logged in user:", selfData)
+        const promiseData = await refetch()
+        setUser(promiseData.data)
+        console.log("Logged in user:", promiseData.data)
       }
     }
   )
