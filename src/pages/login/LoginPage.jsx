@@ -2,35 +2,43 @@ import React from 'react'
 import { Layout, Space, Card,Button, Checkbox, Form, Input, Flex, Alert} from 'antd';
 import { LockFilled ,LockOutlined,UserOutlined} from '@ant-design/icons';
 import logo from "../../assets/Mern Space Admin Logo.svg"
-import { useMutation } from '@tanstack/react-query';
-import { login } from '../../http/api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { login, self } from '../../http/api.js';
 
 const loginUser = async (credentials)=>{
   const {data} = await login(credentials)
   return data;
 }
+
+const getSelf = async()=>{
+  const {data} = await self()
+  return data;
+}
 const LoginPage = () => {
+
+  const {data: selfData, refetch} = useQuery({
+    queryKey:['self'],
+    queryFn:getSelf,
+    enabled: false // Don't run on mount, only after login
+  })
 
   const {mutate,isPending,isError,error} = useMutation(
     { 
-      mutationKey:'login',
+      mutationKey:['login'],
       mutationFn :loginUser,
       onSuccess:async ()=>{
+        await refetch()
         console.log("user logged in successfully")
+        console.log("Logged in user:", selfData)
       }
     }
   )
 
+  
+
  
   return (
     <>
-    {/* <div>Sign in</div>
-    <input type="text" placeholder='username'/>
-    <input type="text" placeholder='password'/>
-    <button>login</button>
-    <label htmlFor="remember me">Remember me</label>
-    <input type="checkbox" id='remember me'/>
-    <a href="#">forget password</a> */}
 
     <Layout style={{height:'100vh', display:'grid',placeItems:'center'}}>
       <Space vertical align='center'>
@@ -55,7 +63,7 @@ const LoginPage = () => {
     autoComplete="off"
       onFinish={(userData)=>{
         mutate({email:userData.username,password:userData.password})
-        console.log(userData)
+        //console.log(userData)
       }}
   >
       {isError &&  <Alert title={error?.message} type="error" />}
