@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import { self } from '../http/api';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../store.js';
+import { AxiosError } from 'axios';
 
 const getSelf = async()=>{
   const {data} = await self()
@@ -15,6 +16,14 @@ const Root = () => {
     const {data,isLoading} = useQuery({
     queryKey:['self'],
     queryFn:getSelf,
+    retry: (failureCount, error) => {
+
+      if(error instanceof AxiosError && error.response?.status)
+      {
+        return false;
+      }
+      return failureCount < 3;
+    }
     
   })
 
