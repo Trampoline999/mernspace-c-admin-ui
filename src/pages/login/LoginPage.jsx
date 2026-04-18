@@ -3,7 +3,7 @@ import { Layout, Space, Card,Button, Checkbox, Form, Input, Flex, Alert} from 'a
 import { LockFilled ,LockOutlined,UserOutlined} from '@ant-design/icons';
 import logo from "../../assets/Mern Space Admin Logo.svg"
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { login, self } from '../../http/api.js';
+import { login, logout, self } from '../../http/api.js';
 import { authStore } from '../../store.js';
 
 const loginUser = async (credentials)=>{
@@ -17,7 +17,7 @@ const getSelf = async()=>{
 }
 const LoginPage = () => {
 
-  const {setUser} = authStore()
+  const {setUser , logout:logoutFromStore} = authStore()
 
   const {data: selfData, refetch} = useQuery({
     queryKey:['self'],
@@ -31,14 +31,17 @@ const LoginPage = () => {
       mutationFn :loginUser,
       onSuccess:async ()=>{
         const promiseData = await refetch()
+
+        if(promiseData.data.role==="customer")
+        {
+            await logout();
+            logoutFromStore();
+        }
         setUser(promiseData.data)
         console.log("Logged in user:", promiseData.data)
       }
     }
   )
-
-  
-
  
   return (
     <>
