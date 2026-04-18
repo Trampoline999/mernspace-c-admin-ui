@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAuthStore } from '../store.js'
-import { Navigate, Outlet ,Link} from 'react-router-dom'
+import { Navigate, Outlet} from 'react-router-dom'
 
 const DashBoard = () => {
 
