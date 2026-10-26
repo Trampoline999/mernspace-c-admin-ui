@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import LoginPage from "./LoginPage"
 
 
-
 describe("Login page", () => {
 
     it("should show required login details", () => {
@@ -18,7 +17,6 @@ describe("Login page", () => {
 })
 
 
-//getByText --> get elements by text content
-//findBy --> return promise and auto retry until 1000ms
-//queryBy --> return null if element is not found
-
+//[getByText] --> get elements by text content
+//[findBy] --> return promise and auto retry until 1000ms
+//[queryBy] --> return null if element is not found

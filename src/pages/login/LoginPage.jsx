@@ -15,7 +15,7 @@ import logo from "../../assets/Mern Space Admin Logo.svg";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { login, logout, self } from "../../http/api.js";
 import { useAuthStore } from "../../store.js";
-
+import { usePermission } from "../../hooks/usePermission.js";
 const loginUser = async (credentials) => {
   const { data } = await login(credentials);
   return data;
@@ -27,21 +27,32 @@ const getSelf = async () => {
 };
 const LoginPage = () => {
   const { setUser, logout: logoutFromStore } = useAuthStore();
+  const { isAllowed } = usePermission();
+
 
   const { data: selfData, refetch } = useQuery({
     queryKey: ["self"],
     queryFn: getSelf,
-    enabled: false, // Don't run on mount, only after login
+    enabled: false, // warn: Don't run on mount, only after login
   });
+  const { mutate: logoutMutate } = useMutation({
+    mutationKey: ["logout"],
+    mutationFn: logout,
+    onSuccess: () => {
+      logoutFromStore();
+      return
+    },
+  });
+
   const { mutate, isPending, isError, error } = useMutation({
     mutationKey: ["login"],
     mutationFn: loginUser,
     onSuccess: async () => {
       const promiseData = await refetch();
 
-      if (promiseData.data.role === "customer") {
-        await logout();
-        logoutFromStore();
+      if (!isAllowed(promiseData.data.role)) {
+        logoutMutate();
+        return
       }
       setUser(promiseData.data);
       console.log("Logged in user:", promiseData.data);
@@ -93,7 +104,13 @@ const LoginPage = () => {
                 //console.log(userData)
               }}
             >
-              {isError && <Alert title={error?.message} type="error" />}
+              {isError && (
+                <Alert
+                  style={{ marginBottom: 24 }}
+                  title={error?.message}
+                  type="error"
+                />
+              )}
               <Form.Item
                 name="username"
                 rules={[
