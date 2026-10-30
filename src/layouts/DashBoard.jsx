@@ -1,6 +1,6 @@
 import { useAuthStore } from '../store.js';
 import { Navigate, Outlet } from 'react-router-dom';
-import SidebarDemo from '@/components/sidebar-demo';
+import SidebarDemo from '@/components/sidebar-demo.jsx';
 
 const DashBoard = () => {
 
