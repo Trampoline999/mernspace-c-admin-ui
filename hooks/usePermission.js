@@ -1,8 +1,8 @@
 
-import { useAuthStore } from "../store.js";
+import { useAuthStore } from "../src/store.js";
 
 
-export const usePermision = () => {
+export const usePermission = () => {
 
   const user = useAuthStore((state) => state.user);
   const allowedRoles = ["admin", "manager"]
@@ -13,6 +13,6 @@ export const usePermision = () => {
   };
 
   return {
-    isAlloewed: _isPermission
+    isAllowed: _isPermission
   }
 };

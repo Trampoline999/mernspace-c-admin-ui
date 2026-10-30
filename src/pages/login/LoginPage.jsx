@@ -15,7 +15,7 @@ import logo from "../../assets/Mern Space Admin Logo.svg";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { login, logout, self } from "../../http/api.js";
 import { useAuthStore } from "../../store.js";
-import { usePermission } from "../../hooks/usePermission.js";
+import { usePermission } from "../../../hooks/usePermission.js";
 const loginUser = async (credentials) => {
   const { data } = await login(credentials);
   return data;
@@ -50,7 +50,7 @@ const LoginPage = () => {
     onSuccess: async () => {
       const promiseData = await refetch();
 
-      if (!isAllowed(promiseData.data.role)) {
+      if (isAllowed(promiseData.data.role)) {
         logoutMutate();
         return
       }

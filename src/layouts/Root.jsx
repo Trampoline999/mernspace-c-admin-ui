@@ -11,30 +11,27 @@ const getSelf = async()=>{
 }
 
 const Root = () => {
-    const {setUser} = useAuthStore();
+    const { user, setUser } = useAuthStore();
 
-    const {data,isLoading} = useQuery({
-    queryKey:['self'],
-    queryFn:getSelf,
+    const { data, isLoading } = useQuery({
+    queryKey: ['self'],
+    queryFn: getSelf,
     retry: (failureCount, error) => {
-
-      if(error instanceof AxiosError && error.response?.status)
-      {
+      if (error instanceof AxiosError && error.response?.status) {
         return false;
       }
       return failureCount < 3;
-    }
-    
-  })
+    },
+  });
 
-  useEffect(()=>{
-    if(data){
-      setUser(data)
+  useEffect(() => {
+    if (data) {
+      setUser(data);
     }
-  },[data,setUser])
-    
-  if(isLoading){
-    return <div>Loading...</div>
+  }, [data, setUser]);
+
+  if (isLoading || (data && !user)) {
+    return <div>Loading...</div>;
   }
 
   return (

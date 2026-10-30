@@ -5,16 +5,15 @@ import { useAuthStore } from '../store.js'
 
 
 const NonAuth = () => {
-    const {user} = useAuthStore();
-    if(user!==null)
-    {
-        return <Navigate to="/" replace= {true}/>
-    }
+  const { user } = useAuthStore();
+  if (user !== null) {
+    return <Navigate to="/" replace={true} />
+  }
   return (
     <div>
-        <h1>NonAuth</h1>
-        
-        <Outlet />
+      <h1>NonAuth</h1>
+
+      <Outlet />
     </div>
   )
 }
