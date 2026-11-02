@@ -1,8 +1,9 @@
-"use client";;
+"use client";
 import { cn } from "@/lib/utils";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { IconMenu2, IconX } from "@tabler/icons-react";
+import { NavLink } from "react-router-dom";
 
 const SidebarContext = createContext(undefined);
 
@@ -64,14 +65,16 @@ export const DesktopSidebar = ({
     <>
       <motion.div
         className={cn(
-          "h-full px-4 py-4 hidden  md:flex md:flex-col bg-neutral-100 dark:bg-neutral-800 w-[300px] shrink-0",
+          "h-full py-4 px-2.5 hidden md:flex md:flex-col bg-neutral-100 dark:bg-neutral-800 shrink-0 overflow-x-hidden border-r border-neutral-200 dark:border-neutral-800",
           className
         )}
         animate={{
-          width: animate ? (open ? "300px" : "60px") : "300px",
+          width: open ? "240px" : "60px",
         }}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
+        transition={{
+          duration: 0.2,
+          ease: "easeInOut",
+        }}
         {...props}>
         {children}
       </motion.div>
@@ -131,20 +134,37 @@ export const SidebarLink = ({
   ...props
 }) => {
   const { open, animate } = useSidebar();
+  const labelContent = React.isValidElement(link.label)
+    ? link.label.props.children
+    : link.label;
+
   return (
-    <a
-      href={link.href}
-      className={cn("flex items-center justify-start gap-2  group/sidebar py-2", className)}
+    <NavLink
+      to={link.href}
+      className={({ isActive }) =>
+        cn(
+          "flex items-center h-10 w-full rounded-md text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200/60 dark:hover:bg-neutral-700/60 transition-colors group/sidebar cursor-pointer overflow-hidden",
+          isActive && "bg-neutral-200/80 dark:bg-neutral-700/80 font-medium",
+          className
+        )
+      }
+      title={typeof labelContent === "string" ? labelContent : undefined}
       {...props}>
-      {link.icon}
+      <span className="h-10 w-10 shrink-0 flex items-center justify-center">
+        {link.icon}
+      </span>
       <motion.span
         animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
+          width: animate ? (open ? "auto" : 0) : "auto",
         }}
-        className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0">
-        {link.label}
+        transition={{
+          duration: 0.2,
+          ease: "easeInOut",
+        }}
+        className="text-neutral-700 dark:text-neutral-200 text-sm whitespace-nowrap overflow-hidden inline-block !p-0 !m-0">
+        {labelContent}
       </motion.span>
-    </a>
+    </NavLink>
   );
 };

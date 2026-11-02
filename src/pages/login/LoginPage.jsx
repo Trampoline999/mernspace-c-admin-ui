@@ -10,8 +10,8 @@ import {
   Flex,
   Alert,
 } from "antd";
-import { LockFilled, LockOutlined, UserOutlined } from "@ant-design/icons";
-import logo from "../../assets/Mern Space Admin Logo.svg";
+import { Lock, User } from "lucide-react";
+import logo from "../../assets/MernSpaceAdminLogo.svg";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { login, logout, self } from "../../http/api.js";
 import { useAuthStore } from "../../store.js";
@@ -84,7 +84,7 @@ const LoginPage = () => {
                   justifyContent: "center",
                 }}
               >
-                <LockFilled /> Sign in
+                <Lock className="w-4 h-4 inline-block" /> Sign in
               </Space>
             }
             variant="borderless"
@@ -118,7 +118,7 @@ const LoginPage = () => {
                 ]}
               >
                 <Input
-                  prefix={<UserOutlined />}
+                  prefix={<User className="w-4 h-4 text-neutral-400" />}
                   type={"text"}
                   placeholder="username"
                 />
@@ -131,7 +131,7 @@ const LoginPage = () => {
                 ]}
               >
                 <Input.Password
-                  prefix={<LockOutlined />}
+                  prefix={<Lock className="w-4 h-4 text-neutral-400" />}
                   type={"password"}
                   placeholder="password"
                 />
