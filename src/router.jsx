@@ -17,7 +17,7 @@ export const router = createBrowserRouter([
                     element: <DashBoard />,
                     children: [
                         {
-                            path: "",
+                            path: "/home",
                             element: <HomePage />,
                         },
                         {

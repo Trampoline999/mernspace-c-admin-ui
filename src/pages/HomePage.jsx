@@ -1,8 +1,11 @@
+import { useAuthStore } from '@/store'
 import React from 'react'
-
+import Title from 'antd/es/skeleton/Title'
 const HomePage = () => {
+
+  const { user } = useAuthStore()
   return (
-    <h1>HomePage</h1>
+    <Title>Welcome {user?.firstName}</Title>
   )
 }
 
