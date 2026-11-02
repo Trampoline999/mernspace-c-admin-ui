@@ -5,11 +5,10 @@ import { cn } from "@/lib/utils";
 import {
   Home,
   Utensils,
-  ShoppingBag,
   TrendingUp,
-  Package,
-  BadgePercent,
+  ShoppingBasketIcon,
   Users,
+  BadgePercent,
   Pizza,
 } from "lucide-react";
 import { IconLayoutSidebar, IconLayoutSidebarRight } from "@tabler/icons-react";
@@ -28,17 +27,24 @@ export default function AppSidebar() {
       ),
     },
     {
-      label: "Menu",
-      href: "/menu",
+      label: "Users",
+      href: "/users",
+      icon: (
+        <Users className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Resturants",
+      href: "/resturants",
       icon: (
         <Utensils className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
     {
-      label: "Orders",
-      href: "/orders",
+      label: "Products",
+      href: "/products",
       icon: (
-        <ShoppingBag className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+        <ShoppingBasketIcon className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
     {
@@ -46,13 +52,6 @@ export default function AppSidebar() {
       href: "/sales",
       icon: (
         <TrendingUp className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-    },
-    {
-      label: "Inventory",
-      href: "/inventory",
-      icon: (
-        <Package className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
     {
