@@ -15,7 +15,8 @@ createRoot(document.getElementById('root')).render(
       <ConfigProvider theme={{
         token: {
           colorPrimary: '#f65f42',
-          colorLink: '#f65f42'
+          colorLink: '#f65f42',
+          fontFamily: "'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         }
       }}>
         <RouterProvider router={router} />

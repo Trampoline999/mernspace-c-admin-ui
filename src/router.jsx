@@ -5,6 +5,7 @@ import DashBoard from "./layouts/DashBoard";
 import NonAuth from "./layouts/NonAuth";
 import Root from "./layouts/Root";
 import Users from "./pages/users/Users";
+import RequireRole from "./components/RequireRole";
 
 export const router = createBrowserRouter([
     {
@@ -22,7 +23,11 @@ export const router = createBrowserRouter([
                         },
                         {
                             path: "/users",
-                            element: <Users />,
+                            element: (
+                                <RequireRole roles={["admin"]}>
+                                    <Users />
+                                </RequireRole>
+                            ),
                         }
                     ]
                 },

@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { Sidebar, SidebarBody, SidebarLink, useSidebar } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
 import {
   Home,
   Utensils,
@@ -14,23 +13,18 @@ import {
 import { IconLayoutSidebar, IconLayoutSidebarRight } from "@tabler/icons-react";
 import { motion } from "motion/react";
 
+
 const MotionSpan = motion.span;
 const EASE_IN_OUT = [0.77, 0, 0.175, 1];
 
-export default function AppSidebar() {
-  const links = [
+export default function AppSidebar({ role }) {
+
+  const sidebar_links = [
     {
       label: "Home",
       href: "/home",
       icon: (
         <Home className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-    },
-    {
-      label: "Users",
-      href: "/users",
-      icon: (
-        <Users className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
     {
@@ -62,6 +56,24 @@ export default function AppSidebar() {
       ),
     },
   ];
+
+  //[refactor]
+  const checkAdmin = () => {
+    if (role === 'admin') {
+      const adminLinks = [...sidebar_links];
+      adminLinks.splice(1, 0, {
+        label: "Users",
+        href: "/users",
+        icon: (
+          <Users className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+        ),
+      });
+      return adminLinks;
+    }
+    return sidebar_links;
+  };
+
+
   const [open, setOpen] = useState(true);
   return (
     <div className="h-full relative z-20">
@@ -70,7 +82,7 @@ export default function AppSidebar() {
           <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
             <Logo />
             <div className="mt-8 flex flex-col gap-2">
-              {links.map((link, idx) => (
+              {checkAdmin().map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
               ))}
             </div>
