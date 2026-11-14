@@ -1,27 +1,32 @@
 import {
-  tableFeatures,
   columnFilteringFeature,
-  globalFilteringFeature,
+  columnVisibilityFeature,
   createFilteredRowModel,
+  createPaginatedRowModel,
+  createSortedRowModel,
   filterFn_includesString,
   rowPaginationFeature,
-  createPaginatedRowModel,
-} from "@tanstack/react-table";
+  rowSelectionFeature,
+  rowSortingFeature,
+  sortFn_alphanumeric,
+  sortFn_text,
+  tableFeatures,
+} from "@tanstack/react-table"
 
-/**
- * TanStack Table v9 Feature Registration
- *
- * Keep features registered at module scope so the feature map is
- * stable and not recomputed on every render.
- *
- * Note: filteredRowModel must be registered before paginatedRowModel
- * so pagination acts on the filtered result set.
- */
+// New in v9: declare the features this table uses — anything you don't
+// register is tree-shaken out of the bundle.
 export const features = tableFeatures({
   columnFilteringFeature,
-  globalFilteringFeature,
-  filteredRowModel: createFilteredRowModel(),
+  columnVisibilityFeature,
   rowPaginationFeature,
+  rowSelectionFeature,
+  rowSortingFeature,
+  filteredRowModel: createFilteredRowModel(),
   paginatedRowModel: createPaginatedRowModel(),
+  sortedRowModel: createSortedRowModel(),
   filterFns: { includesString: filterFn_includesString },
-});
+  sortFns: { alphanumeric: sortFn_alphanumeric, text: sortFn_text },
+})
+
+// Pass this as the first generic argument to `ColumnDef`, `Column`, `Table`,
+// and `Row` so each type knows which feature APIs are available.
