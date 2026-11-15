@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { FolderUp, Inbox, Plus, Save, Trash2, X } from "lucide-react";
 
@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { validateField, validateUserForm } from "./userFormSchema";
 
 export const ROLE_OPTIONS = [
   { value: "admin", label: "Admin" },
@@ -33,8 +34,6 @@ export const ROLE_OPTIONS = [
   { value: "employee", label: "Employee" },
   { value: "customer", label: "Customer" },
 ];
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const cardClassName =
   "bg-white dark:bg-neutral-900 rounded-xl shadow-2xs border border-neutral-200/80 dark:border-neutral-800 p-5 gap-4";
@@ -56,6 +55,16 @@ export function UserForm({
     initialValues?.profileImagePreview || null
   );
   const fileInputRef = useRef(null);
+  const objectUrlRef = useRef(null);
+
+  // Clean up object URL when component unmounts
+  useEffect(() => {
+    return () => {
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+      }
+    };
+  }, []);
 
   const form = useForm({
     defaultValues: {
@@ -70,50 +79,7 @@ export function UserForm({
       profileImage: initialValues?.profileImage || null,
     },
     validators: {
-      onSubmit: ({ value }) => {
-        const errors = {};
-        const firstName = value.firstName?.trim() || "";
-        const lastName = value.lastName?.trim() || "";
-        const email = value.email?.trim() || "";
-
-        if (!firstName) {
-          errors.firstName = "First name is required";
-        } else if (firstName.length < 2 || firstName.length > 50) {
-          errors.firstName = "First name must be between 2 and 50 characters";
-        }
-
-        if (!lastName) {
-          errors.lastName = "Last name is required";
-        } else if (lastName.length < 2 || lastName.length > 50) {
-          errors.lastName = "Last name must be between 2 and 50 characters";
-        }
-
-        if (!email) {
-          errors.email = "Email is required";
-        } else if (!EMAIL_REGEX.test(email)) {
-          errors.email = "Invalid email address";
-        }
-
-        if (!value.role) {
-          errors.role = "Please select a role";
-        }
-
-        if (!value.password) {
-          errors.password = "Password is required";
-        } else if (value.password.length < 8) {
-          errors.password = "Password should be at least 8 characters";
-        }
-
-        if (!value.confirmPassword) {
-          errors.confirmPassword = "Confirm password is required";
-        } else if (value.confirmPassword !== value.password) {
-          errors.confirmPassword = "Passwords do not match";
-        }
-
-        if (Object.keys(errors).length > 0) {
-          return { fields: errors };
-        }
-      },
+      onSubmit: ({ value }) => validateUserForm(value),
     },
     onSubmit: async ({ value }) => {
       await onSubmit?.(value);
@@ -123,15 +89,24 @@ export function UserForm({
   const handleFileChange = (file) => {
     if (!file) return;
     form.setFieldValue("profileImage", file);
+
+    // Revoke previous object URL if one was created
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+
     const objectUrl = URL.createObjectURL(file);
+    objectUrlRef.current = objectUrl;
     setPreviewUrl(objectUrl);
   };
 
   const handleRemoveImage = (e) => {
     e.stopPropagation();
     form.setFieldValue("profileImage", null);
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
     }
     setPreviewUrl(null);
     if (fileInputRef.current) {
@@ -159,14 +134,7 @@ export function UserForm({
             <form.Field
               name="firstName"
               validators={{
-                onChange: ({ value }) => {
-                  const trimmed = value?.trim();
-                  if (!trimmed) return "First name is required";
-                  if (trimmed.length < 2 || trimmed.length > 50) {
-                    return "First name must be between 2 and 50 characters";
-                  }
-                  return undefined;
-                },
+                onChange: ({ value }) => validateField("firstName", value),
               }}
             >
               {(field) => {
@@ -199,14 +167,7 @@ export function UserForm({
             <form.Field
               name="lastName"
               validators={{
-                onChange: ({ value }) => {
-                  const trimmed = value?.trim();
-                  if (!trimmed) return "Last name is required";
-                  if (trimmed.length < 2 || trimmed.length > 50) {
-                    return "Last name must be between 2 and 50 characters";
-                  }
-                  return undefined;
-                },
+                onChange: ({ value }) => validateField("lastName", value),
               }}
             >
               {(field) => {
@@ -241,12 +202,7 @@ export function UserForm({
             <form.Field
               name="email"
               validators={{
-                onChange: ({ value }) => {
-                  const trimmed = value?.trim();
-                  if (!trimmed) return "Email is required";
-                  if (!EMAIL_REGEX.test(trimmed)) return "Invalid email address";
-                  return undefined;
-                },
+                onChange: ({ value }) => validateField("email", value),
               }}
             >
               {(field) => {
@@ -311,10 +267,7 @@ export function UserForm({
           <form.Field
             name="role"
             validators={{
-              onChange: ({ value }) => {
-                if (!value) return "Please select a role";
-                return undefined;
-              },
+              onChange: ({ value }) => validateField("role", value),
             }}
           >
             {(field) => {
@@ -357,7 +310,7 @@ export function UserForm({
                 <FieldLabel
                   htmlFor={field.name}
                   className={fieldLabelClassName}
-                >
+                > 
                   Designation
                 </FieldLabel>
                 <Input
@@ -446,11 +399,10 @@ export function UserForm({
                 const file = e.dataTransfer.files?.[0];
                 if (file) handleFileChange(file);
               }}
-              className={`border-2 border-dashed rounded-xl p-7 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-2 ${
-                isDragging
+              className={`border-2 border-dashed rounded-xl p-7 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-2 ${isDragging
                   ? "border-[#F65F42] bg-[#F65F42]/5"
                   : "border-neutral-200/90 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 bg-neutral-50/50 dark:bg-neutral-900/50"
-              }`}
+                }`}
             >
               <div className="w-11 h-11 rounded-full bg-[#F65F42]/10 flex items-center justify-center text-[#F65F42]">
                 <FolderUp className="w-5 h-5" />
@@ -478,13 +430,7 @@ export function UserForm({
             <form.Field
               name="password"
               validators={{
-                onChange: ({ value }) => {
-                  if (!value) return "Password is required";
-                  if (value.length < 8) {
-                    return "Password should be at least 8 characters";
-                  }
-                  return undefined;
-                },
+                onChange: ({ value }) => validateField("password", value),
               }}
             >
               {(field) => {
@@ -518,12 +464,10 @@ export function UserForm({
             <form.Field
               name="confirmPassword"
               validators={{
-                onChange: ({ value, fieldApi }) => {
-                  if (!value) return "Confirm password is required";
-                  const password = fieldApi.form.getFieldValue("password");
-                  if (value !== password) return "Passwords do not match";
-                  return undefined;
-                },
+                onChange: ({ value, fieldApi }) =>
+                  validateField("confirmPassword", value, {
+                    password: fieldApi.form.getFieldValue("password"),
+                  }),
               }}
             >
               {(field) => {
@@ -571,10 +515,10 @@ export function UserForm({
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="h-9 px-4.5 bg-[#F65F42] hover:bg-[#e55337] text-white text-sm font-medium rounded-lg flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+          className="h-9 px-4.5 bg-[#F65F42] hover:bg-[#e55337] text-white !text-white text-sm font-medium rounded-lg flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
         >
-          <Save className="w-3.5 h-3.5" />
-          <span>Save</span>
+          <Save className="w-3.5 h-3.5 text-white !text-white" />
+          <span className="text-white !text-white">Save</span>
         </Button>
       </div>
     </form>

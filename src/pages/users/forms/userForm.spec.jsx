@@ -122,6 +122,45 @@ describe("UserForm Component", () => {
 
     expect(handleCancel).toHaveBeenCalledTimes(1);
   });
+
+  it("revokes object URLs when replacing file, removing file, and unmounting", () => {
+    const createObjectURLSpy = vi
+      .spyOn(URL, "createObjectURL")
+      .mockReturnValue("blob:http://localhost:5173/mock-url-1");
+    const revokeObjectURLSpy = vi
+      .spyOn(URL, "revokeObjectURL")
+      .mockImplementation(() => {});
+
+    const { container, unmount } = render(
+      <UserForm onCancel={vi.fn()} onSubmit={vi.fn()} />
+    );
+
+    const fileInput = container.querySelector('input[type="file"]');
+    expect(fileInput).toBeInTheDocument();
+
+    const file1 = new File(["file1"], "avatar1.png", { type: "image/png" });
+    fireEvent.change(fileInput, { target: { files: [file1] } });
+    expect(createObjectURLSpy).toHaveBeenCalledWith(file1);
+
+    // Replace file with second image
+    createObjectURLSpy.mockReturnValueOnce("blob:http://localhost:5173/mock-url-2");
+    const file2 = new File(["file2"], "avatar2.png", { type: "image/png" });
+    fireEvent.change(fileInput, { target: { files: [file2] } });
+
+    // Verify first URL was revoked when replaced
+    expect(revokeObjectURLSpy).toHaveBeenCalledWith(
+      "blob:http://localhost:5173/mock-url-1"
+    );
+
+    // Unmount and verify second URL is revoked on cleanup
+    unmount();
+    expect(revokeObjectURLSpy).toHaveBeenCalledWith(
+      "blob:http://localhost:5173/mock-url-2"
+    );
+
+    createObjectURLSpy.mockRestore();
+    revokeObjectURLSpy.mockRestore();
+  });
 });
 
 describe("UserDrawer Component", () => {

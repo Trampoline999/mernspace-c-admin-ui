@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { DataTable } from "./DataTable";
-import { columns as userColumns } from "../components/table/columns";
+import { columns as userColumns } from "../components/table/userColumns";
 
 describe("DataTable component", () => {
   const sampleColumns = [

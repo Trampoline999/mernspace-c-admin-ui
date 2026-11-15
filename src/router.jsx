@@ -6,6 +6,7 @@ import NonAuth from "./layouts/NonAuth";
 import Root from "./layouts/Root";
 import Users from "./pages/users/Users";
 import RequireRole from "./components/RequireRole";
+import { Tenants } from "./pages/tenants/Tenants";
 
 export const router = createBrowserRouter([
     {
@@ -27,6 +28,12 @@ export const router = createBrowserRouter([
                                 <RequireRole roles={["admin"]}>
                                     <Users />
                                 </RequireRole>
+                            ),
+                        },
+                        {
+                            path: "/tenants",
+                            element: (
+                                <Tenants />
                             ),
                         }
                     ]

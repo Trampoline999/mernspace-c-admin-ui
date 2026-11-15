@@ -11,7 +11,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { columns } from "@/components/table/columns";
+import { columns } from "@/components/table/userColumns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,7 +24,7 @@ import {
 import { DataTable } from "@/shared/DataTable";
 import { useAuthStore } from "@/store";
 import { getUsers } from "@/http/api";
-import { UserDrawer } from "./userForm";
+import { UserDrawer } from "./forms/userForm";
 
 const EMPTY_USERS = [];
 const PER_PAGE = 10;
@@ -167,10 +167,10 @@ const Users = () => {
           <Button
             type="button"
             onClick={() => setIsDrawerOpen(true)}
-            className="h-9 px-4 bg-[#F65F42] hover:bg-[#e55337] text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer shrink-0"
+            className="h-9 px-4 bg-[#F65F42] hover:bg-[#e55337] text-white !text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer shrink-0"
           >
-            <Plus className="w-4 h-4" />
-            <span>Create users</span>
+            <Plus className="w-4 h-4 text-white !text-white" />
+            <span className="text-white !text-white">Create users</span>
           </Button>
         </div>
 

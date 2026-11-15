@@ -10,3 +10,12 @@ export const getUsers = (paramsOrQuery) => {
   }
   return api.get("/users", { params: paramsOrQuery });
 };
+
+export const getTenants = (paramsOrQuery) => {
+  if (typeof paramsOrQuery === "string") {
+    return api.get(paramsOrQuery ? `/tenants?${paramsOrQuery}` : "/tenants");
+  }
+  return api.get("/tenants", { params: paramsOrQuery });
+};
+
+export const createTenant = (tenantData) => api.post("/tenants", tenantData);
