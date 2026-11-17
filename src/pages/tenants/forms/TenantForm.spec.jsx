@@ -15,12 +15,14 @@ describe("TenantForm Component", () => {
     expect(screen.getByLabelText(/restaurant name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/address/i)).toBeInTheDocument();
 
-    // Ensure user fields are NOT present
+    // Ensure user fields, image upload, and status are NOT present
     expect(screen.queryByLabelText(/first name/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/last name/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/email/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/password/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/role/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/status/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/image/i)).not.toBeInTheDocument();
 
     // Buttons
     expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();

@@ -50,6 +50,7 @@ export function DataTable({
   emptyMessage = "No results.",
   initialPageSize = 10,
   manualPagination = false,
+  manualFiltering = false,
   totalCount,
   pagination: controlledPagination,
   onPaginationChange,
@@ -80,6 +81,7 @@ export function DataTable({
       pagination,
     },
     onPaginationChange: handlePaginationChange,
+    manualFiltering
   });
 
   const pageCount = Math.max(table.getPageCount?.() ?? 1, 1);
@@ -198,8 +200,8 @@ export function DataTable({
                   type="button"
                   onClick={() => table.setPageIndex(item)}
                   className={`w-8 h-8 rounded text-sm flex items-center justify-center cursor-pointer select-none transition-colors ${isActive
-                      ? "border border-[#F65F42] text-[#F65F42] bg-white dark:bg-neutral-800 font-medium"
-                      : "border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 hover:border-[#F65F42] hover:text-[#F65F42]"
+                    ? "border border-[#F65F42] text-[#F65F42] bg-white dark:bg-neutral-800 font-medium"
+                    : "border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 hover:border-[#F65F42] hover:text-[#F65F42]"
                     }`}
                   aria-current={isActive ? "page" : undefined}
                 >

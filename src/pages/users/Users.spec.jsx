@@ -79,15 +79,13 @@ describe("Users Page with Filters, Table, and Drawer", () => {
     // Verify search input
     expect(screen.getByPlaceholderText("Search...")).toBeInTheDocument();
 
-    // Verify Status & Role filter dropdowns
-    expect(
-      screen.getByRole("combobox", { name: /filter by status/i })
-    ).toBeInTheDocument();
+    // Verify Role filter dropdown and no status/ban filters
     expect(
       screen.getByRole("combobox", { name: /filter by role/i })
     ).toBeInTheDocument();
-
-    // Verify no 'ban' filter is present
+    expect(
+      screen.queryByRole("combobox", { name: /filter by status/i })
+    ).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/filter by ban/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/ban/i)).not.toBeInTheDocument();
 

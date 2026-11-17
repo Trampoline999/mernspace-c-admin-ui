@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { Save, X } from "lucide-react";
 
@@ -54,6 +54,7 @@ export function TenantForm({
   return (
     <form
       data-testid="tenant-form"
+      autoComplete="off"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -86,7 +87,7 @@ export function TenantForm({
                   <Input
                     id={field.name}
                     name={field.name}
-                    placeholder="e.g. Grand Palace Hotel"
+                    autoComplete="off"
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
@@ -121,7 +122,7 @@ export function TenantForm({
                   <Input
                     id={field.name}
                     name={field.name}
-                    placeholder="e.g. 12 MG Road, Bengaluru"
+                    autoComplete="off"
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
@@ -168,6 +169,14 @@ export function TenantDrawer({
   trigger,
   onSuccess,
 }) {
+  const [formKey, setFormKey] = useState(0);
+
+  useEffect(() => {
+    if (open) {
+      setFormKey((prev) => prev + 1);
+    }
+  }, [open]);
+
   return (
     <Drawer
       open={open}
@@ -175,7 +184,7 @@ export function TenantDrawer({
       swipeDirection="right"
     >
       {trigger}
-      <DrawerContent className="sm:[--drawer-content-width:34rem] md:[--drawer-content-width:40rem] flex flex-col h-full max-h-screen">
+      <DrawerContent className="data-[swipe-axis=x]:sm:[--drawer-content-width:30rem] data-[swipe-axis=x]:md:[--drawer-content-width:32rem] max-w-[95vw] flex flex-col h-full max-h-screen">
         <DrawerHeader className="px-6 py-4 border-b border-neutral-200/80 dark:border-neutral-800 flex items-center justify-between">
           <div>
             <DrawerTitle className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
@@ -192,6 +201,7 @@ export function TenantDrawer({
 
         <div className="flex-1 overflow-y-auto px-6 py-5">
           <TenantForm
+            key={formKey}
             onSubmit={async (values) => {
               await onSuccess?.(values);
               onOpenChange?.(false);

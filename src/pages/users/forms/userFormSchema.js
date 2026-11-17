@@ -25,9 +25,7 @@ export const userFormBaseSchema = z.object({
   email: toTrimmedString("Email is required").pipe(
     z.string().email("Invalid email address")
   ),
-  phoneNumber: z.preprocess(toString, z.string()).optional(),
   role: toTrimmedString("Please select a role"),
-  designation: z.preprocess(toString, z.string()).optional(),
   password: z.preprocess(
     toString,
     z
@@ -39,7 +37,6 @@ export const userFormBaseSchema = z.object({
     toString,
     z.string().min(1, "Confirm password is required")
   ),
-  profileImage: z.any().nullable().optional(),
 });
 
 export const userFormSchema = userFormBaseSchema.superRefine((data, ctx) => {
@@ -52,10 +49,6 @@ export const userFormSchema = userFormBaseSchema.superRefine((data, ctx) => {
   }
 });
 
-/**
- * Validates a single field against the schema.
- * Reusable for TanStack Form field-level validators.
- */
 export const validateField = (fieldName, value, formValues) => {
   if (fieldName === "confirmPassword") {
     const password = formValues?.password;
